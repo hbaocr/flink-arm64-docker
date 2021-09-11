@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  apache_flinkpy:
+  apache_flink:
     build:
       context: .
-      dockerfile: DockerfilePyflink #Dockerfile
+      dockerfile: Dockerfile #DockerfilePyflink #Dockerfile

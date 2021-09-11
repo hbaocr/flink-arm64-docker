@@ -79,15 +79,16 @@ RUN set -ex; \
   rm flink.tgz; \
   \
   chown -R flink:flink .;
+# Configure container
+COPY docker-entrypoint.sh /
 
 # support pylink : https://ci.apache.org/projects/flink/flink-docs-master/docs/deployment/resource-providers/standalone/docker/
 RUN apt-get update -y \
     && apt-get install -y python3 python3-pip python3-dev build-essential \
     && rm -rf /var/lib/apt/lists/* \
-    && ln -s /usr/bin/python3 /usr/bin/python
+    && ln -s /usr/bin/python3 /usr/bin/python \
+    && chmod +x /docker-entrypoint.sh
 
-# Configure container
-COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
 EXPOSE 6123 8081
 CMD ["help"]
