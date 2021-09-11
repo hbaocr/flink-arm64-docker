@@ -1,0 +1,6 @@
+version: "3.8"
+services:
+  apache_flink:
+    build:
+      context: .
+      dockerfile: Dockerfile
