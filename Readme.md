@@ -3,7 +3,29 @@
 * To update new-est dockerfile for new release `apache flink`  access this repo [apache/flink-docker](https://github.com/apache/flink-docker) then choose your verison
 
 * If arm64 type host machine, Just change the base image of `Dockerfile`  from  ` openjdk:11-jre` for x64 ---> `arm64v8/openjdk:11-jre-buster` to support arm64 build
+
+
+* change `maybe_enable_jemalloc` function from `docker-entrypint.sh` to use `jemalloc` on `arm64` cpu :
+```sh
+maybe_enable_jemalloc() {
+    if [ "${DISABLE_JEMALLOC:-false}" == "false" ]; then
+        
+        if [ "$(uname -m)" == "aarch64" ]; then
+            echo "load libjemalloc for arm64v8 arch "
+            export LD_PRELOAD=$LD_PRELOAD:/usr/lib/aarch64-linux-gnu/libjemalloc.so
+        else
+            echo "load libjemalloc for x86/64 arch "
+            export LD_PRELOAD=$LD_PRELOAD:/usr/lib/x86_64-linux-gnu/libjemalloc.so
+        fi   
+    fi
+}
+```
+
 * To Build image :   `docker-compose  -f ./docker-compose-build.yml build` 
+
+
+
+
 
 * To start java flink cluster :  `docker-compose  -f ./docker-compose.yml up -d` 
     * 1 x  jobmanager
