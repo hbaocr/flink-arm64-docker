@@ -83,12 +83,38 @@ RUN set -ex; \
 COPY docker-entrypoint.sh /
 
 # support pylink : https://ci.apache.org/projects/flink/flink-docs-master/docs/deployment/resource-providers/standalone/docker/
-RUN apt-get update -y \
-    && apt-get install -y python3 python3-pip python3-dev build-essential \
-    && rm -rf /var/lib/apt/lists/* \
+RUN  apt-get update -y \
+    && apt-get install -y git python3 python3-pip python3-dev build-essential cmake pkg-config lsb-release libjemalloc-dev \
     && ln -s /usr/bin/python3 /usr/bin/python \
-    && chmod +x /docker-entrypoint.sh
+    && chmod +x /docker-entrypoint.sh \
+    && pip3 install numpy
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+
+
+#WORKDIR $FLINK_HOME
+# install pyarrow on python3.7
+WORKDIR /
+RUN git clone --depth 1 https://github.com/apache/arrow.git \
+    && mkdir -p /arrow/cpp/release
+WORKDIR /arrow/cpp/release/
+RUN cmake .. -DCMAKE_BUILD_TYPE=Release -DARROW_PYTHON=on \
+    && make \
+    && make install
+#ENV ARROW_HOME=usr/local/lib/
+RUN pip3 install pyarrow apache-flink 
+
+
+
+
+
+
+
+
+
+   #&& pip3 install pyarrow
+   # && pip3 install apache-flink
+   # && rm -rf /var/lib/apt/lists/* \
+
+#ENTRYPOINT ["/docker-entrypoint.sh"]
 EXPOSE 6123 8081
 CMD ["help"]
